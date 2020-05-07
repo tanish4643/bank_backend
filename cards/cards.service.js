@@ -22,8 +22,8 @@ async function authenticate({ cardno, pin }) {
 }
 
 var notes = {
-    "Two_Thousand": 10,
-    "Five_Hundered": 15
+    "Two_Thousand": 0,
+    "Five_Hundered": 0
 }
 
 async function registerCard(cardParam) {
@@ -47,11 +47,13 @@ async function registerCard(cardParam) {
 async function deposit(params) {
     const card = await Cards.findOne({ cardno: params.cardno });
     
-    if (isNaN(params.amount)) throw 'Invalid Amount Provided';
+    if (isNaN(params.two_thousand) || isNaN(params.five_hundered)) throw 'Invalid Note Count';
     if (!card) throw 'Card not found';
     
-    card.amount += parseFloat(params.amount);
-
+    card.amount += parseFloat((params.two_thousand*2000) + (params.five_hundered*500));
+    notes.Two_Thousand += params.two_thousand;
+    notes.Five_Hundered += params.five_hundered;
+    console.log(notes);
     await card.save();
     return {message: "Amount deposited successfully."}
 }
@@ -79,14 +81,21 @@ async function withdraw(params) {
     five = amount/500;
 
     if(notes.Five_Hundered < five)
-        throw 'Cannot Dispense Cash due to insufficient cash in machine';
+        throw 'Cannot Dispense due to insufficient cash in machine';
 
     await card.save();
+
+    notes.Two_Thousand -= two;
+    notes.Five_Hundered -= five;
+
+    console.log(notes);
+
     return {
         message: "Amount Withdrawn successfully.",
         notes: {
             "Two_Thousand": two,
             "Five_Hundered": five
-        }
+        },
+        balance: card.amount
     };
 }

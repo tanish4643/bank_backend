@@ -14,6 +14,8 @@ Project Setup:
 wait for the message "running server on port 4000"
 
 
+Information: Note Count is managed in the server only and not in DB, hence the note count will be 0 when server is started.
+
 API Routes:
 
 1. Register Card
@@ -51,5 +53,6 @@ Endpoint: '/cards/deposit'
 Method: 'POST'
 Params: {
 	cardno,
-	amount
+	two_thousand,
+	five_hundered
 }
